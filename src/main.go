@@ -1,5 +1,3 @@
-//go:generate goversioninfo -icon=dvplgo.ico
-
 package main
 
 import (
@@ -7,6 +5,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,16 +16,15 @@ import (
 )
 
 func main() {
-
-	fmt.Println("                                                                      ")
+	fmt.Println()
 	color.Cyan("######################################################################")
 	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V2.0.0 ###############")
 	color.Cyan("######################################################################")
-	fmt.Println("                                                                      ")
+	fmt.Println()
 
 	if len(os.Args) < 2 {
 		fmt.Println("No mode selected. Try 'dvplgo --help or -h' for advice.")
-		fmt.Println("                                                 ")
+		fmt.Println()
 		return
 	}
 
@@ -44,8 +42,7 @@ func main() {
 
 	processDir, err := os.Getwd()
 	if err != nil {
-		printError(fmt.Sprintf("Error getting the current working directory: %v", err))
-		return
+		log.Fatalf("Error getting the current working directory: %v", err)
 	}
 
 	switch strings.ToLower(realArgs[0]) {
@@ -58,11 +55,10 @@ func main() {
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, true)
 		close(loadingDone)
 		if err != nil {
-			printError(fmt.Sprintf("Compression failed: %v", err))
-			return
+			log.Fatalf("Compression failed: %v", err)
 		}
 		printSuccess(fmt.Sprintf("Compression completed. %s compressed.", formatFileCount(count)))
-		fmt.Println("                                                                           ")
+		fmt.Println()
 	case "decompress", "decomp", "dcp", "d":
 		// decompress
 		color.Cyan("Decompressing...")
@@ -72,11 +68,10 @@ func main() {
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, false)
 		close(loadingDone)
 		if err != nil {
-			printError(fmt.Sprintf("Decompression failed: %v", err))
-			return
+			log.Fatalf("Decompression failed: %v", err)
 		}
 		printSuccess(fmt.Sprintf("Decompression completed. %s decompressed.", formatFileCount(count)))
-		fmt.Println("                                                                               ")
+		fmt.Println()
 	case "--help", "-h":
 		color.Cyan(`dvplgo [mode] [--keep-originals]
 	mode can be the following:
@@ -84,9 +79,9 @@ func main() {
 		decompress (decomp, dcp, d): decompresses dvpl files into standard files
 		--help (-h): show this help message
 		--keep-originals (--keep-original, -ko): flag keeps the original files after compression/ decompression`)
-		fmt.Println("                                                                               ")
+		fmt.Println()
 	default:
-		printError("Incorrect mode selected. Use Help for information")
+		log.Fatalf("Incorrect mode selected. Use Help for information")
 	}
 }
 
@@ -114,7 +109,7 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 			filePath := filepath.Join(originalsDir, dirItem.Name())
 			fileData, err := ioutil.ReadFile(filePath)
 			if err != nil {
-				fmt.Printf("Failed to read file %s: %v\n", filePath, err)
+				log.Printf("Failed to read file %s: %v\n", filePath, err)
 				continue
 			}
 
@@ -125,7 +120,7 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 			} else {
 				processedBlock, err = decompressDVPL(fileData)
 				if err != nil {
-					fmt.Printf("Failed to decompress file %s: %v\n", filePath, err)
+					log.Printf("Failed to decompress file %s: %v\n", filePath, err)
 					continue
 				}
 				filePath = strings.TrimSuffix(filePath, ".dvpl")
@@ -133,14 +128,14 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 
 			err = ioutil.WriteFile(filePath, processedBlock, 0644)
 			if err != nil {
-				fmt.Printf("Failed to write file %s: %v\n", filePath, err)
+				log.Printf("Failed to write file %s: %v\n", filePath, err)
 				continue
 			}
 
 			if !keepOrignals {
 				err = os.Remove(filepath.Join(originalsDir, dirItem.Name()))
 				if err != nil {
-					fmt.Printf("Failed to remove file %s: %v\n", filePath, err)
+					log.Printf("Failed to remove file %s: %v\n", filePath, err)
 				}
 			}
 		}
@@ -151,24 +146,17 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 
 // CompressDVPL is equivalent to the compressDVPL JavaScript function
 func compressDVPL(buffer []byte) []byte {
-	// Create a buffer for compressed data
+	// Try compressing the data
 	compressedData := make([]byte, lz4.CompressBlockBound(len(buffer)))
-
-	// Compress the original data
 	compressedSize, err := lz4.CompressBlock(buffer, compressedData, nil)
-	if err != nil {
-		// If compression fails, return the original data
-		return buffer
-	}
-
-	compressedData = compressedData[:compressedSize]
-
-	if len(compressedData) == 0 || len(compressedData) >= len(buffer) {
-		// Cannot be compressed or it became bigger after compressed (why compress it then?)
+	if err != nil || compressedSize >= len(buffer) {
+		// If compression fails or data becomes bigger, store the uncompressed data
 		footerBuffer := toDVPLFooter(len(buffer), len(buffer), crc32.ChecksumIEEE(buffer), 0)
 		return append(buffer, footerBuffer...)
 	}
 
+	// Compression successful
+	compressedData = compressedData[:compressedSize]
 	footerBuffer := toDVPLFooter(len(buffer), len(compressedData), crc32.ChecksumIEEE(compressedData), 2)
 	return append(compressedData, footerBuffer...)
 }
@@ -191,24 +179,21 @@ func decompressDVPL(buffer []byte) ([]byte, error) {
 	}
 
 	if footerData.typ == 0 {
-		// The above checks whether the block is compressed or not (by dvpl type recorded)
-		// Below Check whether the Type recorded and Sizes are consistent. If the Type be 0, CompressedSize and OriginalSize must be equal.
+		// Data is uncompressed
 		if !(footerData.oSize == footerData.cSize && footerData.typ == 0) {
 			return nil, fmt.Errorf("DVPLTypeSizeMismatch")
 		}
 		return targetBlock, nil
 	} else if footerData.typ == 1 || footerData.typ == 2 {
-		// Ready to Decompress
-
+		// Data is compressed, decompress it
 		deDVPLBlock := make([]byte, footerData.oSize)
-		// Decompress the data
 		_, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
 		if err != nil {
 			return nil, err
 		}
-
 		return deDVPLBlock, nil
 	}
+
 	return nil, fmt.Errorf("UNKNOWN DVPL FORMAT")
 }
 
@@ -272,6 +257,7 @@ func printError(message string) {
 
 func loadingCircle(done <-chan struct{}) {
 	c := color.New(color.FgCyan)
+	defer fmt.Println() // New line after loading animation
 	for {
 		select {
 		case <-done:
