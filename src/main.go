@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	lz4 "github.com/pierrec/lz4/v4"
@@ -48,7 +49,12 @@ func main() {
 	switch strings.ToLower(realArgs[0]) {
 	case "compress", "comp", "cp", "c":
 		// compress
+		color.Cyan("Compressing...")
+		color.Cyan("              ")
+		loadingDone := make(chan struct{})
+		go loadingCircle(loadingDone)
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, true)
+		close(loadingDone)
 		if err != nil {
 			printError(fmt.Sprintf("Compression failed: %v", err))
 			return
@@ -57,21 +63,18 @@ func main() {
 		fmt.Println("                                                                           ")
 	case "decompress", "decomp", "dcp", "d":
 		// decompress
+		color.Cyan("Decompressing...")
+		color.Cyan("                ")
+		loadingDone := make(chan struct{})
+		go loadingCircle(loadingDone)
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, false)
+		close(loadingDone)
 		if err != nil {
 			printError(fmt.Sprintf("Decompression failed: %v", err))
 			return
 		}
 		printSuccess(fmt.Sprintf("Decompression completed. %s decompressed.", formatFileCount(count)))
 		fmt.Println("                                                                               ")
-	case "--help", "-h":
-		color.Cyan(`dvplgo [mode] [--keep-originals]
-	mode can be the following:
-	compress (comp, cp, c): compresses files into dvpl
-	decompress (decomp, dcp, d): decompresses dvpl files into standard files
-	--help (-h): show this help message
-	--keep-originals (--keep-original, -ko): flag keeps the original files after compression/ decompression`)
-		fmt.Println("                                                                                      ")
 	default:
 		printError("Incorrect mode selected. Use Help for information")
 	}
@@ -255,4 +258,20 @@ func printSuccess(message string) {
 // Add this function to print error messages in red color
 func printError(message string) {
 	color.Red("[✗] " + message)
+}
+
+func loadingCircle(done <-chan struct{}) {
+	c := color.New(color.FgCyan)
+	for {
+		select {
+		case <-done:
+			return
+		default:
+			for _, r := range `-\|/` {
+				fmt.Printf("\r")
+				c.Printf("%c ", r) // Add a space after the loading circle character
+				time.Sleep(100 * time.Millisecond)
+			}
+		}
+	}
 }
