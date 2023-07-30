@@ -1,3 +1,5 @@
+//go:generate goversioninfo -icon=dvplgo.ico
+
 package main
 
 import (
