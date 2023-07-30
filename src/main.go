@@ -20,12 +20,12 @@ func main() {
 
 	fmt.Println("                                                                      ")
 	color.Cyan("######################################################################")
-	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V1.0.0 ###############")
+	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V2.0.0 ###############")
 	color.Cyan("######################################################################")
 	fmt.Println("                                                                      ")
 
 	if len(os.Args) < 2 {
-		fmt.Println("No mode selected. Try 'dvplgo --help' for advice.")
+		fmt.Println("No mode selected. Try 'dvplgo --help or -h' for advice.")
 		fmt.Println("                                                 ")
 		return
 	}
