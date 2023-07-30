@@ -18,7 +18,7 @@ import (
 func main() {
 	fmt.Println()
 	color.Cyan("######################################################################")
-	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V2.0.0 ###############")
+	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V2.1.0 ###############")
 	color.Cyan("######################################################################")
 	fmt.Println()
 
