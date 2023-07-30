@@ -9,7 +9,7 @@ Usage :
 
  - Decompression : "decompress", "decomp", "dcp", "d"
 
- - Arguments : "--keep-originals", "-ko", "--keep-original"
+ - Flags : "--keep-originals", "-ko", "--keep-original"
 
  - Help : "--help", "-h"
 
