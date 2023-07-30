@@ -75,6 +75,14 @@ func main() {
 		}
 		printSuccess(fmt.Sprintf("Decompression completed. %s decompressed.", formatFileCount(count)))
 		fmt.Println("                                                                               ")
+	case "--help", "-h":
+		color.Cyan(`dvplgo [mode] [--keep-originals]
+	mode can be the following:
+	compress (comp, cp, c): compresses files into dvpl
+	decompress (decomp, dcp, d): decompresses dvpl files into standard files
+	--help (-h): show this help message
+	--keep-originals (--keep-original, -ko): flag keeps the original files after compression/ decompression`)
+		fmt.Println("                                                                               ")
 	default:
 		printError("Incorrect mode selected. Use Help for information")
 	}
