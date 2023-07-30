@@ -1,7 +1,7 @@
 # dvpl-go cli converter
  A CLI Tool Coded In Golang To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4 Comrpession.
 
- ![Demo](img/dvplgo.gif)
+ ![Demo](img/dvplgo-demo.gif)
 
 ```
 
