@@ -3,7 +3,7 @@
 
 ```
 
-Usage
+Usage :
 
  - Compression : "compress", "comp", "cp", "c"
 
