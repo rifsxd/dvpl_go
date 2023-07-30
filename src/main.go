@@ -23,6 +23,7 @@ func main() {
 
 	if len(os.Args) < 2 {
 		fmt.Println("No mode selected. Try 'dvplgo --help' for advice.")
+		fmt.Println("                                                 ")
 		return
 	}
 
