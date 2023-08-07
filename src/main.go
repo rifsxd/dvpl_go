@@ -42,7 +42,7 @@ func main() {
 
 	processDir, err := os.Getwd()
 	if err != nil {
-		log.Fatalf("Error getting the current working directory: %v", err)
+		printError(fmt.Sprintf("Error getting the current working directory: %v", err))
 	}
 
 	switch strings.ToLower(realArgs[0]) {
@@ -55,7 +55,7 @@ func main() {
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, true)
 		close(loadingDone)
 		if err != nil {
-			log.Fatalf("Compression failed: %v", err)
+			printError(fmt.Sprintf("Compression failed: %v", err))
 		}
 		printSuccess(fmt.Sprintf("Compression completed. %s compressed.", formatFileCount(count)))
 		fmt.Println()
@@ -68,7 +68,7 @@ func main() {
 		count, err := Recursion(filepath.Clean(processDir), keepOriginals, false)
 		close(loadingDone)
 		if err != nil {
-			log.Fatalf("Decompression failed: %v", err)
+			printError(fmt.Sprintf("Decompression failed: %v", err))
 		}
 		printSuccess(fmt.Sprintf("Decompression completed. %s decompressed.", formatFileCount(count)))
 		fmt.Println()
@@ -81,7 +81,7 @@ func main() {
 		--keep-originals (--keep-original, -ko): flag keeps the original files after compression/ decompression`)
 		fmt.Println()
 	default:
-		log.Fatalf("Incorrect mode selected. Use Help for information")
+		printError(fmt.Sprintf("Incorrect mode selected. Use Help for information"))
 	}
 }
 
