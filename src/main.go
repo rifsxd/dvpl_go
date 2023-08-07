@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -43,6 +42,7 @@ func main() {
 	processDir, err := os.Getwd()
 	if err != nil {
 		printError(fmt.Sprintf("Error getting the current working directory: %v", err))
+		fmt.Println()
 	}
 
 	switch strings.ToLower(realArgs[0]) {
@@ -56,6 +56,7 @@ func main() {
 		close(loadingDone)
 		if err != nil {
 			printError(fmt.Sprintf("Compression failed: %v", err))
+			fmt.Println()
 		}
 		printSuccess(fmt.Sprintf("Compression completed. %s compressed.", formatFileCount(count)))
 		fmt.Println()
@@ -82,6 +83,7 @@ func main() {
 		fmt.Println()
 	default:
 		printError(fmt.Sprintf("Incorrect mode selected. Use Help for information"))
+		fmt.Println()
 	}
 }
 
@@ -109,7 +111,8 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 			filePath := filepath.Join(originalsDir, dirItem.Name())
 			fileData, err := ioutil.ReadFile(filePath)
 			if err != nil {
-				log.Printf("Failed to read file %s: %v\n", filePath, err)
+				printError(fmt.Sprintf("Failed to read file %s: %v\n", filePath, err))
+				fmt.Println()
 				continue
 			}
 
@@ -120,7 +123,8 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 			} else {
 				processedBlock, err = decompressDVPL(fileData)
 				if err != nil {
-					log.Printf("Failed to decompress file %s: %v\n", filePath, err)
+					printError(fmt.Sprintf("Failed to decompress file %s: %v\n", filePath, err))
+					fmt.Println()
 					continue
 				}
 				filePath = strings.TrimSuffix(filePath, ".dvpl")
@@ -128,14 +132,16 @@ func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, e
 
 			err = ioutil.WriteFile(filePath, processedBlock, 0644)
 			if err != nil {
-				log.Printf("Failed to write file %s: %v\n", filePath, err)
+				printError(fmt.Sprintf("Failed to write file %s: %v\n", filePath, err))
+				fmt.Println()
 				continue
 			}
 
 			if !keepOrignals {
 				err = os.Remove(filepath.Join(originalsDir, dirItem.Name()))
 				if err != nil {
-					log.Printf("Failed to remove file %s: %v\n", filePath, err)
+					printError(fmt.Sprintf("Failed to remove file %s: %v\n", filePath, err))
+					fmt.Println()
 				}
 			}
 		}
