@@ -1,174 +1,220 @@
+//go:generate goversioninfo
+
 package main
 
 import (
-	"encoding/binary"
+	"errors"
+	"flag"
 	"fmt"
-	"hash/crc32"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/fatih/color"
-	lz4 "github.com/pierrec/lz4/v4"
+	"github.com/klauspost/crc32"
+	"github.com/pierrec/lz4"
 )
 
+const (
+	dvplFooterSize = 20
+	dvplTypeNone   = 0
+	dvplTypeLZ4    = 2
+	dvplExtension  = ".dvpl"
+)
+
+// ANSI escape codes for text coloring
+const (
+	RedColor    = "\033[31m"
+	GreenColor  = "\033[32m"
+	YellowColor = "\033[33m"
+	ResetColor  = "\033[0m"
+)
+
+// Config represents the configuration for the program.
+type Config struct {
+	Mode          string
+	KeepOriginals bool
+	Path          string // New field to specify the directory path.
+}
+
+// DVPLFooter represents the DVPL file footer data.
+type DVPLFooter struct {
+	OriginalSize   uint32
+	CompressedSize uint32
+	CRC32          uint32
+	Type           uint32
+}
+
 func main() {
+
 	fmt.Println()
 	color.Cyan("######################################################################")
-	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V2.1.0 ###############")
+	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V3.0.0 ###############")
 	color.Cyan("######################################################################")
 	fmt.Println()
 
-	if len(os.Args) < 2 {
-		fmt.Println("No mode selected. Try 'dvplgo --help or -h' for advice.")
-		fmt.Println()
+	config, err := parseCommandLineArgs()
+	if err != nil {
+		log.Printf("%sError%s parsing command-line arguments: %v", RedColor, ResetColor, err)
 		return
 	}
 
-	realArgs := os.Args[1:]
-	optionalArgs := realArgs[1:]
-
-	keepOriginals := false
-
-	for _, arg := range optionalArgs {
-		if arg == "--keep-originals" || arg == "-ko" || arg == "--keep-original" {
-			keepOriginals = true
-			break
-		}
-	}
-
-	processDir, err := os.Getwd()
-	if err != nil {
-		printError(fmt.Sprintf("Error getting the current working directory: %v", err))
-		fmt.Println()
-	}
-
-	switch strings.ToLower(realArgs[0]) {
-	case "compress", "comp", "cp", "c":
-		// compress
-		color.Cyan("Compressing...")
-		color.Cyan("              ")
-		loadingDone := make(chan struct{})
-		go loadingCircle(loadingDone)
-		count, err := Recursion(filepath.Clean(processDir), keepOriginals, true)
-		close(loadingDone)
+	switch config.Mode {
+	case "compress", "decompress":
+		err := processFiles(config.Path, config)
 		if err != nil {
-			printError(fmt.Sprintf("Compression failed: %v", err))
-			fmt.Println()
+			log.Printf("%s%s FAILED%s: %v", RedColor, strings.ToUpper(config.Mode), ResetColor, err)
+		} else {
+			log.Printf("%s%s FINISHED%s.", GreenColor, strings.ToUpper(config.Mode), ResetColor)
 		}
-		printSuccess(fmt.Sprintf("Compression completed. %s compressed.", formatFileCount(count)))
-		fmt.Println()
-	case "decompress", "decomp", "dcp", "d":
-		// decompress
-		color.Cyan("Decompressing...")
-		color.Cyan("                ")
-		loadingDone := make(chan struct{})
-		go loadingCircle(loadingDone)
-		count, err := Recursion(filepath.Clean(processDir), keepOriginals, false)
-		close(loadingDone)
-		if err != nil {
-			printError(fmt.Sprintf("Decompression failed: %v", err))
-		}
-		printSuccess(fmt.Sprintf("Decompression completed. %s decompressed.", formatFileCount(count)))
-		fmt.Println()
-	case "--help", "-h":
-		color.Cyan(`dvplgo [mode] [--keep-originals]
-	mode can be the following:
-		compress (comp, cp, c): compresses files into dvpl
-		decompress (decomp, dcp, d): decompresses dvpl files into standard files
-		--help (-h): show this help message
-		--keep-originals (--keep-original, -ko): flag keeps the original files after compression/ decompression`)
-		fmt.Println()
+	case "help":
+		printHelpMessage()
 	default:
-		printError(fmt.Sprintf("Incorrect mode selected. Use Help for information"))
-		fmt.Println()
+		log.Fatalf("%sIncorrect mode selected. Use '-help' for information.%s", RedColor, ResetColor)
 	}
 }
 
-// Recursion is the main code that does all the heavy lifting
-func Recursion(originalsDir string, keepOrignals bool, compression bool) (int, error) {
-	count := 0
+func parseCommandLineArgs() (*Config, error) {
+	config := &Config{}
+	flag.StringVar(&config.Mode, "mode", "", "Mode can be 'compress' / 'decompress' / 'help' (for an extended help guide).")
+	flag.BoolVar(&config.KeepOriginals, "keep-originals", false, "Keep original files after compression/decompression.")
+	flag.StringVar(&config.Path, "path", ".", "Directory path/files to process. Default is the current directory.")
+	flag.Parse()
 
-	dirList, err := ioutil.ReadDir(originalsDir)
-	if err != nil {
-		return count, err
+	if config.Mode == "" {
+		return nil, errors.New("No mode selected. Use '-help' for usage information.")
 	}
 
-	for _, dirItem := range dirList {
-		if dirItem.IsDir() {
-			subdirCount, err := Recursion(filepath.Join(originalsDir, dirItem.Name()), keepOrignals, compression)
-			if err != nil {
-				return count, err
-			}
-			count += subdirCount
-		} else if (compression && !strings.HasSuffix(dirItem.Name(), ".dvpl")) ||
-			(!compression && strings.HasSuffix(dirItem.Name(), ".dvpl")) {
-			// Process files based on the compression flag
-			count++
+	return config, nil
+}
 
-			filePath := filepath.Join(originalsDir, dirItem.Name())
+func printHelpMessage() {
+	fmt.Println(`dvpl [-mode] [-keep-originals] [-path]
+
+    • mode can be one of the following:
+
+        compress: compresses files into dvpl.
+        decompress: decompresses dvpl files into standard files.
+        help: show this help message.
+
+	• flags can be one of the following:
+
+    	-keep-originals flag keeps the original files after compression/decompression.
+    	-path specifies the directory path to process. Default is the current directory.
+
+	• usage can be one of the following examples:
+
+		$ dvplgo -mode decompress -path /path/to/decompress/compress
+		$ dvplgo -mode compress -path /path/to/decompress/compress
+		$ dvplgo -mode decompress -path /path/to/decompress/compress -keep-originals
+		$ dvplgo -mode compress -path /path/to/decompress/compress -keep-originals
+		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl
+		$ dvplgo -mode compress -path /path/to/decompress/compress.yaml
+		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl -keep-originals
+		$ dvplgo -mode dcompress -path /path/to/decompress/compress.yaml -keep-originals
+	`)
+}
+
+func processFiles(directoryOrFile string, config *Config) error {
+	info, err := os.Stat(directoryOrFile)
+	if err != nil {
+		return err
+	}
+
+	if info.IsDir() {
+		dirList, err := ioutil.ReadDir(directoryOrFile)
+		if err != nil {
+			return err
+		}
+
+		for _, dirItem := range dirList {
+			err := processFiles(filepath.Join(directoryOrFile, dirItem.Name()), config)
+			if err != nil {
+				fmt.Printf("Error processing directory %s: %v\n", dirItem.Name(), err)
+			}
+		}
+	} else {
+		isDecompression := config.Mode == "decompress" && strings.HasSuffix(directoryOrFile, ".dvpl")
+		isCompression := config.Mode == "compress" && !strings.HasSuffix(directoryOrFile, ".dvpl")
+
+		if isDecompression || isCompression {
+			filePath := directoryOrFile
 			fileData, err := ioutil.ReadFile(filePath)
 			if err != nil {
-				printError(fmt.Sprintf("Failed to read file %s: %v\n", filePath, err))
-				fmt.Println()
-				continue
+				fmt.Printf("%sError%s reading file %s: %v\n", RedColor, ResetColor, directoryOrFile, err)
+				return err
 			}
 
 			var processedBlock []byte
-			if compression {
-				processedBlock = compressDVPL(fileData)
-				filePath += ".dvpl"
+			newName := ""
+
+			if isCompression {
+				processedBlock, err = CompressDVPL(fileData)
+				newName = directoryOrFile + ".dvpl"
 			} else {
-				processedBlock, err = decompressDVPL(fileData)
-				if err != nil {
-					printError(fmt.Sprintf("Failed to decompress file %s: %v\n", filePath, err))
-					fmt.Println()
-					continue
-				}
-				filePath = strings.TrimSuffix(filePath, ".dvpl")
+				processedBlock, err = DecompressDVPL(fileData)
+				newName = strings.TrimSuffix(directoryOrFile, ".dvpl")
 			}
 
-			err = ioutil.WriteFile(filePath, processedBlock, 0644)
 			if err != nil {
-				printError(fmt.Sprintf("Failed to write file %s: %v\n", filePath, err))
-				fmt.Println()
-				continue
+				fmt.Printf("File %s failed to convert due to %v\n", directoryOrFile, err)
+				return err
 			}
 
-			if !keepOrignals {
-				err = os.Remove(filepath.Join(originalsDir, dirItem.Name()))
+			err = ioutil.WriteFile(newName, processedBlock, 0644)
+			if err != nil {
+				fmt.Printf("%sError%s writing file %s: %v\n", RedColor, ResetColor, newName, err)
+				return err
+			}
+
+			fmt.Printf("File %s has been successfully %s into %s%s%s\n", filePath, getAction(config.Mode), GreenColor, newName, ResetColor)
+
+			if !config.KeepOriginals {
+				err := os.Remove(filePath)
 				if err != nil {
-					printError(fmt.Sprintf("Failed to remove file %s: %v\n", filePath, err))
-					fmt.Println()
+					fmt.Printf("%sError%s deleting file %s: %v\n", RedColor, ResetColor, filePath, err)
 				}
 			}
+		} else {
+			fmt.Printf("%sIgnoring%s file %s\n", YellowColor, ResetColor, directoryOrFile)
 		}
 	}
 
-	return count, nil
+	return nil
 }
 
-// CompressDVPL is equivalent to the compressDVPL JavaScript function
-func compressDVPL(buffer []byte) []byte {
-	// Try compressing the data
-	compressedData := make([]byte, lz4.CompressBlockBound(len(buffer)))
-	compressedSize, err := lz4.CompressBlock(buffer, compressedData, nil)
-	if err != nil || compressedSize >= len(buffer) {
-		// If compression fails or data becomes bigger, store the uncompressed data
-		footerBuffer := toDVPLFooter(len(buffer), len(buffer), crc32.ChecksumIEEE(buffer), 0)
-		return append(buffer, footerBuffer...)
+func getAction(mode string) string {
+	if mode == "compress" {
+		return GreenColor + "compressed" + ResetColor
+	}
+	return GreenColor + "decompressed" + ResetColor
+}
+
+// CompressDVPL compresses a buffer and returns the processed DVPL file buffer.
+func CompressDVPL(buffer []byte) ([]byte, error) {
+	compressedBlock := make([]byte, lz4.CompressBlockBound(len(buffer)))
+	compressedBlockSize, err := lz4.CompressBlockHC(buffer, compressedBlock, 0)
+
+	if err != nil {
+		return nil, err
 	}
 
-	// Compression successful
-	compressedData = compressedData[:compressedSize]
-	footerBuffer := toDVPLFooter(len(buffer), len(compressedData), crc32.ChecksumIEEE(compressedData), 2)
-	return append(compressedData, footerBuffer...)
+	var footerBuffer []byte
+	if compressedBlockSize == 0 || compressedBlockSize >= len(buffer) {
+		// Cannot be compressed or it became bigger after compression (why compress it then?)
+		footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(len(buffer)), crc32.ChecksumIEEE(buffer), 0)
+		return append(buffer, footerBuffer...), nil
+	}
+
+	compressedBlock = compressedBlock[:compressedBlockSize]
+	footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(compressedBlockSize), crc32.ChecksumIEEE(compressedBlock), 2)
+	return append(compressedBlock, footerBuffer...), nil
 }
 
-// DecompressDVPL is equivalent to the decompressDVPL JavaScript function
-func decompressDVPL(buffer []byte) ([]byte, error) {
+// DecompressDVPL decompresses a DVPL buffer and returns the uncompressed file buffer.
+func DecompressDVPL(buffer []byte) ([]byte, error) {
 	footerData, err := readDVPLFooter(buffer)
 	if err != nil {
 		return nil, err
@@ -176,104 +222,69 @@ func decompressDVPL(buffer []byte) ([]byte, error) {
 
 	targetBlock := buffer[:len(buffer)-20]
 
-	if len(targetBlock) != int(footerData.cSize) {
-		return nil, fmt.Errorf("DVPLSizeMismatch")
+	if uint32(len(targetBlock)) != footerData.CompressedSize {
+		return nil, errors.New("DVPLSizeMismatch")
 	}
 
-	if crc32.ChecksumIEEE(targetBlock) != footerData.crc32 {
-		return nil, fmt.Errorf("DVPLCRC32Mismatch")
+	if crc32.ChecksumIEEE(targetBlock) != footerData.CRC32 {
+		return nil, errors.New("DVPLCRC32Mismatch")
 	}
 
-	if footerData.typ == 0 {
-		// Data is uncompressed
-		if !(footerData.oSize == footerData.cSize && footerData.typ == 0) {
-			return nil, fmt.Errorf("DVPLTypeSizeMismatch")
+	if footerData.Type == 0 {
+		if !(footerData.OriginalSize == footerData.CompressedSize && footerData.Type == 0) {
+			return nil, errors.New("DVPLTypeSizeMismatch")
 		}
 		return targetBlock, nil
-	} else if footerData.typ == 1 || footerData.typ == 2 {
-		// Data is compressed, decompress it
-		deDVPLBlock := make([]byte, footerData.oSize)
+	} else if footerData.Type == 1 || footerData.Type == 2 {
+		deDVPLBlock := make([]byte, footerData.OriginalSize)
 		_, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
 		if err != nil {
 			return nil, err
 		}
+
+		if uint32(len(deDVPLBlock)) != footerData.OriginalSize {
+			return nil, errors.New("DVPLDecodeSizeMismatch")
+		}
+
 		return deDVPLBlock, nil
 	}
 
-	return nil, fmt.Errorf("UNKNOWN DVPL FORMAT")
+	return nil, errors.New("UNKNOWN DVPL FORMAT")
 }
 
-// ToDVPLFooter is equivalent to the toDVPLFooter JavaScript function
-func toDVPLFooter(inputSize, compressedSize int, crc32 uint32, typ int) []byte {
+// createDVPLFooter creates a DVPL footer from the provided data.
+func createDVPLFooter(inputSize, compressedSize, crc32, typeVal uint32) []byte {
 	result := make([]byte, 20)
-	binary.LittleEndian.PutUint32(result[0:4], uint32(inputSize))
-	binary.LittleEndian.PutUint32(result[4:8], uint32(compressedSize))
-	binary.LittleEndian.PutUint32(result[8:12], crc32)
-	binary.LittleEndian.PutUint32(result[12:16], uint32(typ))
-	copy(result[16:], []byte("DVPL"))
+	writeLittleEndianUint32(result, inputSize, 0)
+	writeLittleEndianUint32(result, compressedSize, 4)
+	writeLittleEndianUint32(result, crc32, 8)
+	writeLittleEndianUint32(result, typeVal, 12)
+	copy(result[16:], "DVPL")
 	return result
 }
 
-// ReadDVPLFooter is equivalent to the readDVPLFooter JavaScript function
-func readDVPLFooter(buffer []byte) (dvplFooter, error) {
+func readLittleEndianUint32(b []byte, offset int) uint32 {
+	return uint32(b[offset]) | uint32(b[offset+1])<<8 | uint32(b[offset+2])<<16 | uint32(b[offset+3])<<24
+}
+
+// readDVPLFooter reads the DVPL footer data from a DVPL buffer.
+func readDVPLFooter(buffer []byte) (*DVPLFooter, error) {
 	footerBuffer := buffer[len(buffer)-20:]
 	if string(footerBuffer[16:]) != "DVPL" || len(footerBuffer) != 20 {
-		return dvplFooter{}, fmt.Errorf("InvalidDVPLFooter")
+		return nil, errors.New(RedColor + "InvalidDVPLFooter" + ResetColor)
 	}
 
-	footerObject := dvplFooter{}
-	footerObject.oSize = int(binary.LittleEndian.Uint32(footerBuffer[0:4]))
-	footerObject.cSize = int(binary.LittleEndian.Uint32(footerBuffer[4:8]))
-	footerObject.crc32 = binary.LittleEndian.Uint32(footerBuffer[8:12])
-	footerObject.typ = int(binary.LittleEndian.Uint32(footerBuffer[12:16]))
-	return footerObject, nil
+	footerData := &DVPLFooter{}
+	footerData.OriginalSize = readLittleEndianUint32(footerBuffer, 0)
+	footerData.CompressedSize = readLittleEndianUint32(footerBuffer, 4)
+	footerData.CRC32 = readLittleEndianUint32(footerBuffer, 8)
+	footerData.Type = readLittleEndianUint32(footerBuffer, 12)
+	return footerData, nil
 }
 
-type dvplFooter struct {
-	oSize int
-	cSize int
-	crc32 uint32
-	typ   int
-}
-
-func printFileCount(count int, action string) {
-	if count == 1 {
-		fmt.Printf("1 file %s.\n", action)
-	} else {
-		fmt.Printf("%d files %s.\n", count, action)
-	}
-}
-
-func formatFileCount(count int) string {
-	if count == 1 {
-		return "1 file"
-	}
-	return fmt.Sprintf("%d files", count)
-}
-
-// Add this function to print messages in green color
-func printSuccess(message string) {
-	color.Green("[✔] " + message)
-}
-
-// Add this function to print error messages in red color
-func printError(message string) {
-	color.Red("[✗] " + message)
-}
-
-func loadingCircle(done <-chan struct{}) {
-	c := color.New(color.FgCyan)
-	defer fmt.Println() // New line after loading animation
-	for {
-		select {
-		case <-done:
-			return
-		default:
-			for _, r := range `-\|/` {
-				fmt.Printf("\r")
-				c.Printf("%c ", r) // Add a space after the loading circle character
-				time.Sleep(100 * time.Millisecond)
-			}
-		}
-	}
+func writeLittleEndianUint32(b []byte, v uint32, offset int) {
+	b[offset+0] = byte(v)
+	b[offset+1] = byte(v >> 8)
+	b[offset+2] = byte(v >> 16)
+	b[offset+3] = byte(v >> 24)
 }
