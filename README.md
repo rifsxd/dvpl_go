@@ -22,6 +22,7 @@ Usage :
 
 	• usage can be one of the following examples:
 
+		```
 		$ dvplgo -mode decompress -path /path/to/decompress/compress
 		
 		$ dvplgo -mode compress -path /path/to/decompress/compress
@@ -37,9 +38,10 @@ Usage :
 		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
 		
 		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
+		```
 
 
-```
+
 
 Building :
 
