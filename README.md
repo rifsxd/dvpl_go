@@ -7,7 +7,7 @@
 
 Usage :
 
- (`dvpl [-mode] [-keep-originals] [-path]
+  dvpl [-mode] [-keep-originals] [-path]
 
     • mode can be one of the following:
 
@@ -37,7 +37,7 @@ Usage :
 		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
 		
 		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
-	`)
+
 
 ```
 
