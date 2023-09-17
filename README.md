@@ -3,7 +3,6 @@
 
  ![Demo](img/dvplgo-demo.gif)
 
-```
 
 Usage :
 
