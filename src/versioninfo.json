@@ -26,7 +26,7 @@
       "InternalName": "dvplgo",
       "OriginalFilename": "main.go",
       "ProductName": "DVPL GO",
-      "FileDescription": "A CLI Tool Coded In Golang To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4 Comrpession."
+      "FileDescription": "A CLI Tool Coded In Golang To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Comrpession."
     },
     "IconPath": "resource/dvplgo.ico"
 }
