@@ -106,6 +106,8 @@ func printHelpMessage() {
 
 	• usage can be one of the following examples:
 
+		$ dvplgo -mode help
+
 		$ dvplgo -mode decompress -path /path/to/decompress/compress
 		
 		$ dvplgo -mode compress -path /path/to/decompress/compress

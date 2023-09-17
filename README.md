@@ -20,7 +20,10 @@ Usage :
     	-path specifies the directory path to process. Default is the current directory.
 
 	- usage can be one of the following examples:
-
+		
+		```
+		$ dvplgo -mode help
+		```
 		```
 		$ dvplgo -mode decompress -path /path/to/decompress/compress
 		```
