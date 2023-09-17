@@ -52,19 +52,13 @@ Building :
 - go 1.20+ required!
 
 ```
-
 $ git clone https://github.com/RifsxD/dvpl-go.git
-
 ```
 
 ```
-
 $ cd dvpl-go/src/
-
 ```
 
 ```
-
 $ go build
-
 ```
