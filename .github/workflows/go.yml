@@ -20,9 +20,12 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.20'
+        go-version-file: 'src/go.mod'
+        cache-dependency-path: 'src/go.sum'
+        # cache-dependency-path: "**/*.sum"
 
     - name: Build
-      run: go mod tidy ./src/ && go build -v ./src/
+      run: go build -v
 
     - name: Test
-      run: go mod tidy ./src/ && go test -v ./src/
+      run: go test -v
