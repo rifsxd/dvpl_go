@@ -107,13 +107,20 @@ func printHelpMessage() {
 	• usage can be one of the following examples:
 
 		$ dvplgo -mode decompress -path /path/to/decompress/compress
+		
 		$ dvplgo -mode compress -path /path/to/decompress/compress
-		$ dvplgo -mode decompress -path /path/to/decompress/compress -keep-originals
-		$ dvplgo -mode compress -path /path/to/decompress/compress -keep-originals
+		
+		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress
+		
+		$ dvplgo -mode compress -keep-originals -path /path/to/decompress/compress
+		
 		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl
+		
 		$ dvplgo -mode compress -path /path/to/decompress/compress.yaml
-		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl -keep-originals
-		$ dvplgo -mode dcompress -path /path/to/decompress/compress.yaml -keep-originals
+		
+		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
+		
+		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
 	`)
 }
 

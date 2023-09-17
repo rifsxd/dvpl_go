@@ -7,13 +7,37 @@
 
 Usage :
 
- - Compression : "compress", "comp", "cp", "c"
+ (`dvpl [-mode] [-keep-originals] [-path]
 
- - Decompression : "decompress", "decomp", "dcp", "d"
+    • mode can be one of the following:
 
- - Flags : "--keep-originals", "-ko", "--keep-original"
+        compress: compresses files into dvpl.
+        decompress: decompresses dvpl files into standard files.
+        help: show this help message.
 
- - Help : "--help", "-h"
+	• flags can be one of the following:
+
+    	-keep-originals flag keeps the original files after compression/decompression.
+    	-path specifies the directory path to process. Default is the current directory.
+
+	• usage can be one of the following examples:
+
+		$ dvplgo -mode decompress -path /path/to/decompress/compress
+		
+		$ dvplgo -mode compress -path /path/to/decompress/compress
+		
+		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress
+		
+		$ dvplgo -mode compress -keep-originals -path /path/to/decompress/compress
+		
+		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl
+		
+		$ dvplgo -mode compress -path /path/to/decompress/compress.yaml
+		
+		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
+		
+		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
+	`)
 
 ```
 
