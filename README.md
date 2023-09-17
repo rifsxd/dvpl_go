@@ -5,7 +5,7 @@
 
 ```
 
-Usage :
+Help :
 
   dvpl [-mode] [-keep-originals] [-path]
 
@@ -20,7 +20,9 @@ Usage :
     	-keep-originals flag keeps the original files after compression/decompression.
     	-path specifies the directory path to process. Default is the current directory.
 
-	• usage can be one of the following examples:
+	• usage can be one of the following examples:\
+	
+Usage :
 
 $ dvplgo -mode decompress -path /path/to/decompress/compress
 		
