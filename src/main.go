@@ -6,13 +6,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"hash/crc32"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/klauspost/crc32"
 	"github.com/pierrec/lz4"
 )
 

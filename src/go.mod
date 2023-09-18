@@ -5,7 +5,6 @@ go 1.20
 require (
 	fyne.io/fyne/v2 v2.4.0
 	github.com/fatih/color v1.15.0
-	github.com/klauspost/crc32 v1.2.0
 	github.com/pierrec/lz4 v2.6.1+incompatible
 )
 
