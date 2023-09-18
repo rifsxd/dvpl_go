@@ -6,7 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -133,7 +132,7 @@ func processFiles(directoryOrFile string, config *Config) error {
 	}
 
 	if info.IsDir() {
-		dirList, err := ioutil.ReadDir(directoryOrFile)
+		dirList, err := os.ReadDir(directoryOrFile)
 		if err != nil {
 			return err
 		}
@@ -150,7 +149,7 @@ func processFiles(directoryOrFile string, config *Config) error {
 
 		if isDecompression || isCompression {
 			filePath := directoryOrFile
-			fileData, err := ioutil.ReadFile(filePath)
+			fileData, err := os.ReadFile(filePath)
 			if err != nil {
 				fmt.Printf("%sError%s reading file %s: %v\n", RedColor, ResetColor, directoryOrFile, err)
 				return err
@@ -172,7 +171,7 @@ func processFiles(directoryOrFile string, config *Config) error {
 				return err
 			}
 
-			err = ioutil.WriteFile(newName, processedBlock, 0644)
+			err = os.WriteFile(newName, processedBlock, 0644)
 			if err != nil {
 				fmt.Printf("%sError%s writing file %s: %v\n", RedColor, ResetColor, newName, err)
 				return err
