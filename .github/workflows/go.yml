@@ -24,7 +24,9 @@ jobs:
         install-package: true
 
     - name: Build
-      run: go build -v ./src/...
+      run: go build -v
+      working-directory: ./src
 
     - name: Test
-      run: go test -v ./src/...
+      run: go test -v
+      working-directory: ./src
