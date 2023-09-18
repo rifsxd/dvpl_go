@@ -41,7 +41,7 @@ type DVPLFooter struct {
 
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("DVPLGO GUI Converter")
+	myWindow := myApp.NewWindow("RXD DVPLGO GUI Converter")
 
 	iconResource, _ := fyne.LoadResourceFromPath("resource/dvplgo.png")
 	myWindow.SetIcon(iconResource)
@@ -69,7 +69,7 @@ func main() {
 	}
 
 	content := container.NewVBox(
-		widget.NewLabel("DVPLGO GUI Converter"),
+		widget.NewLabel("RXD DVPLGO GUI Converter"),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),
