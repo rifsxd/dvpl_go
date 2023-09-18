@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -23,18 +23,17 @@ jobs:
         node-version: '16'
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v2
       with:
-        go-version: '1.21.1'
+        go-version: '1.20'
 
     - name: Cache Go dependencies
       uses: actions/cache@v2
       with:
         path: |
           ~/.cache/go-build
-          ~/.cache/go-mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        working-directory: ./src
+          src/vendor # Add any relevant paths here if your dependencies are located elsewhere
+        key: ${{ runner.os }}-go-${{ hashFiles('src/go.sum') }}
 
     - name: Build
       run: go build -v
