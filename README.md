@@ -17,7 +17,7 @@ Usage :
 	- flags can be one of the following:
 
     	-keep-originals flag keeps the original files after compression/decompression.
-    	-path specifies the directory path to process. Default is the current directory.
+		-path specifies the directory/files path to process. Default is the current directory.
 
 	- usage can be one of the following examples:
 		

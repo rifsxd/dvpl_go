@@ -80,7 +80,7 @@ func parseCommandLineArgs() (*Config, error) {
 	config := &Config{}
 	flag.StringVar(&config.Mode, "mode", "", "Mode can be 'compress' / 'decompress' / 'help' (for an extended help guide).")
 	flag.BoolVar(&config.KeepOriginals, "keep-originals", false, "Keep original files after compression/decompression.")
-	flag.StringVar(&config.Path, "path", ".", "Directory path/files to process. Default is the current directory.")
+	flag.StringVar(&config.Path, "path", ".", "directory/files path to process. Default is the current directory.")
 	flag.Parse()
 
 	if config.Mode == "" {
@@ -102,7 +102,7 @@ func printHelpMessage() {
 	• flags can be one of the following:
 
     	-keep-originals flag keeps the original files after compression/decompression.
-    	-path specifies the directory path to process. Default is the current directory.
+		-path specifies the directory/files path to process. Default is the current directory.
 
 	• usage can be one of the following examples:
 
