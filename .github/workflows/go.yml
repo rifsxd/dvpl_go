@@ -1,44 +1,26 @@
-name: Go
+name: Go CI/CD
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      uses: actions/checkout@v2
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v2
       with:
-        go-version: '1.20'
-
-    - name: Cache Go dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cache/go-build
-          src/vendor # Add any relevant paths here if your dependencies are located elsewhere
-        key: ${{ runner.os }}-go-${{ hashFiles('src/go.sum') }}
+        go-version: 1.20
 
     - name: Build
-      run: go build -v
-      working-directory: ./src
+      run: go build ./src/...
 
     - name: Test
-      run: go test -v
-      working-directory: ./src
+      run: go test ./src/...
