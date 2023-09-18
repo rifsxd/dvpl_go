@@ -3,6 +3,7 @@
 package main
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"hash/crc32"
@@ -39,11 +40,17 @@ type DVPLFooter struct {
 	Type           uint32
 }
 
+//go:embed resource/dvplgo.png
+var resources embed.FS
+
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("RXD DVPLGO GUI Converter")
 
-	iconResource, _ := fyne.LoadResourceFromPath("resource/dvplgo.png")
+	// Load the embedded image
+	iconData, _ := resources.ReadFile("resource/dvplgo.png")
+	iconResource := fyne.NewStaticResource("dvplgo.png", iconData)
+
 	myWindow.SetIcon(iconResource)
 
 	config := &Config{}
