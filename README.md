@@ -1,4 +1,4 @@
-# dvpl-go cli converter
+# Dvpl-Go Cli Converter
 - A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression.
 
  ![Demo](img/dvplgo-demo.gif)
