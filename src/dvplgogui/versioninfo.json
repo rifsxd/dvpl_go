@@ -23,9 +23,9 @@
       "LegalCopyright": "Copyright © 2023 RXD-MODS",
       "FileVersion": "3.5.0.0",
       "ProductVersion": "3.5.0.0",
-      "InternalName": "dvplgo gui",
+      "InternalName": "rxd dvplgo gui",
       "OriginalFilename": "gui.go",
-      "ProductName": "DVPL GO GUI",
+      "ProductName": "RXD DVPLGO GUI",
       "FileDescription": "A GUI Tool Coded In Golang To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
     },
     "IconPath": "resource/dvplgo.ico"
