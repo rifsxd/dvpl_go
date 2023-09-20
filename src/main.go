@@ -90,7 +90,7 @@ func parseCommandLineArgs() (*Config, error) {
 }
 
 func printHelpMessage() {
-	fmt.Println(`dvpl [-mode] [-keep-originals] [-path]
+	fmt.Println(`dvplgo [-mode] [-keep-originals] [-path]
 
     • mode can be one of the following:
 
