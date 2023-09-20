@@ -53,13 +53,12 @@ const Build = "20/09/2023"
 const Info = "A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
 
 func main() {
-	myApp := app.New()
+	myApp := app.NewWithID("com.rxd.dvplgo")
 	myWindow := myApp.NewWindow("DVPLGO GUI CONVERTER")
 
 	// Load the embedded image
 	iconData, _ := resources.ReadFile("resource/dvplgo.png")
 	iconResource := fyne.NewStaticResource("dvplgo.png", iconData)
-
 	myWindow.SetIcon(iconResource)
 
 	config := &Config{}
@@ -99,8 +98,12 @@ func main() {
 		config.Path = path
 	}
 
+	// Create a custom success dialog
+	successDialog := dialog.NewCustom("Success", "OK", createSuccessContent(), myWindow)
+	successDialog.SetDismissText("OK")
+
 	content := container.NewVBox(
-		widget.NewLabel("DVPLGO GUI CONVERTER • 3.6.0"),
+		widget.NewLabelWithStyle("DVPLGO GUI CONVERTER • 3.6.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),
@@ -119,14 +122,11 @@ func showSuccessDialog(myWindow fyne.Window) {
 	successDialog.Show()
 }
 
-func createSuccessContent() fyne.CanvasObject { // Change the return type to fyne.CanvasObject
+func createSuccessContent() fyne.CanvasObject {
 	successLabel := widget.NewLabelWithStyle("Conversion completed successfully", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
-
-	// Can add more widgets here to customize the appearance of the success dialog.
 
 	content := container.NewVBox(
 		successLabel,
-		// Can Add more widgets or customize the content here.
 	)
 
 	return content
