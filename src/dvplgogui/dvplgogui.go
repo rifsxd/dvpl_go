@@ -50,7 +50,7 @@ const Version = "3.6.0"
 const Repo = "https://github.com/RifsxD/dvpl-go"
 const Web = "https://rxd-mods.xyz"
 const Build = "20/09/2023"
-const Info = "A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
+const Info = "A GUI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
 
 func main() {
 	myApp := app.NewWithID("com.rxd.dvplgo")
