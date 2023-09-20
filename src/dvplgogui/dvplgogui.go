@@ -43,9 +43,18 @@ type DVPLFooter struct {
 //go:embed resource/dvplgo.png
 var resources embed.FS
 
+// Info variables
+const Dev = "RifsxD"
+const Name = "DVPLGO CLI CONVERTER"
+const Version = "3.6.0"
+const Repo = "https://github.com/RifsxD/dvpl-go"
+const Web = "https://rxd-mods.xyz"
+const Build = "20/09/2023"
+const Info = "A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
+
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("RXD DVPLGO GUI Converter")
+	myWindow := myApp.NewWindow("DVPLGO GUI CONVERTER")
 
 	// Load the embedded image
 	iconData, _ := resources.ReadFile("resource/dvplgo.png")
@@ -54,6 +63,20 @@ func main() {
 	myWindow.SetIcon(iconResource)
 
 	config := &Config{}
+
+	// Check if command-line arguments were provided
+	if len(os.Args) > 1 {
+		// Use the provided path as the initial path
+		config.Path = os.Args[1]
+	} else {
+		// Get the current working directory and set it as the initial path
+		initialPath, err := os.Getwd()
+		if err != nil {
+			// Handle the error, e.g., show a message to the user
+			initialPath = "" // Default to an empty string if there's an error
+		}
+		config.Path = initialPath
+	}
 
 	compressButton := widget.NewButton("Compress", func() {
 		config.Mode = "compress"
@@ -70,13 +93,14 @@ func main() {
 	})
 
 	pathEntry := widget.NewEntry()
+	pathEntry.SetText(config.Path)
 	pathEntry.SetPlaceHolder("Enter directory or file path")
 	pathEntry.OnChanged = func(path string) {
 		config.Path = path
 	}
 
 	content := container.NewVBox(
-		widget.NewLabel("RXD DVPLGO GUI Converter"),
+		widget.NewLabel("DVPLGO GUI CONVERTER • 3.6.0"),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),

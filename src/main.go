@@ -46,12 +46,27 @@ type DVPLFooter struct {
 	Type           uint32
 }
 
+// Info variables
+const Dev = "RifsxD"
+const Name = "DVPLGO CLI CONVERTER"
+const Version = "3.6.0"
+const Repo = "https://github.com/RifsxD/dvpl-go"
+const Web = "https://rxd-mods.xyz"
+const Build = "20/09/2023"
+const Info = "A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
+
 func main() {
 
+	cyan := color.New(color.FgCyan)
+
 	fmt.Println()
-	color.Cyan("######################################################################")
-	color.Cyan("############# RXD DVPL CONVERTER GOLANG EDITION V3.0.0 ###############")
-	color.Cyan("######################################################################")
+	cyan.Println("• Name:", Name)
+	cyan.Println("• Version:", Version)
+	cyan.Println("• Build:", Build)
+	cyan.Println("• Dev:", Dev)
+	cyan.Println("• Repo:", Repo)
+	cyan.Println("• Web:", Web)
+	cyan.Println("• Info:", Info)
 	fmt.Println()
 
 	config, err := parseCommandLineArgs()
