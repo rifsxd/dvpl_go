@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/pierrec/lz4"
+	"github.com/pierrec/lz4/v4"
 )
 
 const (
@@ -217,22 +217,16 @@ func getAction(mode string) string {
 
 // CompressDVPL compresses a buffer and returns the processed DVPL file buffer.
 func CompressDVPL(buffer []byte) ([]byte, error) {
-	compressedBlock := make([]byte, lz4.CompressBlockBound(len(buffer)))
-	compressedBlockSize, err := lz4.CompressBlockHC(buffer, compressedBlock, 0)
+	compressedBlockSize := lz4.CompressBlockBound(len(buffer))
+	compressedBlock := make([]byte, compressedBlockSize)
 
+	n, err := lz4.CompressBlock(buffer, compressedBlock, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var footerBuffer []byte
-	if compressedBlockSize == 0 || compressedBlockSize >= len(buffer) {
-		// Cannot be compressed or it became bigger after compression (why compress it then?)
-		footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(len(buffer)), crc32.ChecksumIEEE(buffer), 0)
-		return append(buffer, footerBuffer...), nil
-	}
-
-	compressedBlock = compressedBlock[:compressedBlockSize]
-	footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(compressedBlockSize), crc32.ChecksumIEEE(compressedBlock), 2)
+	compressedBlock = compressedBlock[:n]
+	footerBuffer := createDVPLFooter(uint32(len(buffer)), uint32(n), crc32.ChecksumIEEE(compressedBlock), 2)
 	return append(compressedBlock, footerBuffer...), nil
 }
 
@@ -260,12 +254,12 @@ func DecompressDVPL(buffer []byte) ([]byte, error) {
 		return targetBlock, nil
 	} else if footerData.Type == 1 || footerData.Type == 2 {
 		deDVPLBlock := make([]byte, footerData.OriginalSize)
-		_, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
+		n, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
 		if err != nil {
 			return nil, err
 		}
 
-		if uint32(len(deDVPLBlock)) != footerData.OriginalSize {
+		if uint32(n) != footerData.OriginalSize {
 			return nil, errors.New("DVPLDecodeSizeMismatch")
 		}
 

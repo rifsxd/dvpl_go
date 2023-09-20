@@ -17,7 +17,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/pierrec/lz4"
+	"github.com/pierrec/lz4/v4"
 )
 
 const (
@@ -217,25 +217,22 @@ func getAction(mode string) string {
 	return GreenColor + "decompressed" + ResetColor
 }
 
+// CompressDVPL compresses a buffer and returns the processed DVPL file buffer.
 func CompressDVPL(buffer []byte) ([]byte, error) {
-	compressedBlock := make([]byte, lz4.CompressBlockBound(len(buffer)))
-	compressedBlockSize, err := lz4.CompressBlockHC(buffer, compressedBlock, 0)
+	compressedBlockSize := lz4.CompressBlockBound(len(buffer))
+	compressedBlock := make([]byte, compressedBlockSize)
 
+	n, err := lz4.CompressBlock(buffer, compressedBlock, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var footerBuffer []byte
-	if compressedBlockSize == 0 || compressedBlockSize >= len(buffer) {
-		footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(len(buffer)), crc32.ChecksumIEEE(buffer), 0)
-		return append(buffer, footerBuffer...), nil
-	}
-
-	compressedBlock = compressedBlock[:compressedBlockSize]
-	footerBuffer = createDVPLFooter(uint32(len(buffer)), uint32(compressedBlockSize), crc32.ChecksumIEEE(compressedBlock), 2)
+	compressedBlock = compressedBlock[:n]
+	footerBuffer := createDVPLFooter(uint32(len(buffer)), uint32(n), crc32.ChecksumIEEE(compressedBlock), 2)
 	return append(compressedBlock, footerBuffer...), nil
 }
 
+// DecompressDVPL decompresses a DVPL buffer and returns the uncompressed file buffer.
 func DecompressDVPL(buffer []byte) ([]byte, error) {
 	footerData, err := readDVPLFooter(buffer)
 	if err != nil {
@@ -259,12 +256,12 @@ func DecompressDVPL(buffer []byte) ([]byte, error) {
 		return targetBlock, nil
 	} else if footerData.Type == 1 || footerData.Type == 2 {
 		deDVPLBlock := make([]byte, footerData.OriginalSize)
-		_, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
+		n, err := lz4.UncompressBlock(targetBlock, deDVPLBlock)
 		if err != nil {
 			return nil, err
 		}
 
-		if uint32(len(deDVPLBlock)) != footerData.OriginalSize {
+		if uint32(n) != footerData.OriginalSize {
 			return nil, errors.New("DVPLDecodeSizeMismatch")
 		}
 
@@ -274,6 +271,7 @@ func DecompressDVPL(buffer []byte) ([]byte, error) {
 	return nil, errors.New("UNKNOWN DVPL FORMAT")
 }
 
+// createDVPLFooter creates a DVPL footer from the provided data.
 func createDVPLFooter(inputSize, compressedSize, crc32, typeVal uint32) []byte {
 	result := make([]byte, 20)
 	writeLittleEndianUint32(result, inputSize, 0)
@@ -288,6 +286,7 @@ func readLittleEndianUint32(b []byte, offset int) uint32 {
 	return uint32(b[offset]) | uint32(b[offset+1])<<8 | uint32(b[offset+2])<<16 | uint32(b[offset+3])<<24
 }
 
+// readDVPLFooter reads the DVPL footer data from a DVPL buffer.
 func readDVPLFooter(buffer []byte) (*DVPLFooter, error) {
 	footerBuffer := buffer[len(buffer)-20:]
 	if string(footerBuffer[16:]) != "DVPL" || len(footerBuffer) != 20 {
