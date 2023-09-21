@@ -1,7 +1,7 @@
 project_name: dvpl_go
 release:
   github:
-    owner: RifsxD
+    owner: rifsxd
     name: dvpl_go
   name_template: '{{.Tag}}'
 builds:
