@@ -1,4 +1,4 @@
-# Dvpl-Go Cli & Gui Converter
+# Dvpl_Go Cli & Gui Converter
 - A Cli & Gui Tool Coded In Golang To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression.
 
  ![Demo](img/dvplgo-demo.gif)
