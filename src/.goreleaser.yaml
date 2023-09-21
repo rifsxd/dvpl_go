@@ -3,7 +3,6 @@ project_name: dvpl_go
 builds:
   - env:
     goos:
-      - linux
       - windows
     goarch:
       - amd64

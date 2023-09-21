@@ -7,7 +7,6 @@ release:
 builds:
   - id: dvpl_go
     goos:
-      - linux
       - windows
     goarch:
       - amd64
@@ -19,8 +18,6 @@ builds:
     goamd64:
       - v1
     targets:
-      - linux_amd64_v1
-      - linux_386
       - windows_amd64_v1
       - windows_386
     dir: .
