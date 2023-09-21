@@ -2,13 +2,13 @@
     "FixedFileInfo": {
       "FileVersion": {
         "Major": 4,
-        "Minor": 0,
+        "Minor": 1,
         "Patch": 0,
         "Build": 0
       },
       "ProductVersion": {
         "Major": 4,
-        "Minor": 0,
+        "Minor": 1,
         "Patch": 0,
         "Build": 0
       },
@@ -21,8 +21,8 @@
     "StringFileInfo": {
       "LanguageName": "en-US",
       "LegalCopyright": "Copyright © 2023 RXD-MODS",
-      "FileVersion": "4.0.0.0",
-      "ProductVersion": "4.0.0.0",
+      "FileVersion": "4.1.0.0",
+      "ProductVersion": "4.1.0.0",
       "InternalName": "dvpl_go cli",
       "OriginalFilename": "cli.go",
       "ProductName": "DVPL_GO CLI",
