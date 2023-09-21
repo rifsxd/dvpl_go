@@ -1,4 +1,4 @@
-module github.com/RifsxD/dvpl_go
+module github.com/rifsxd/dvpl_go
 
 go 1.20
 
