@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/RifsxD/dvpl_go/dvpl_logic"
 	"github.com/fatih/color"
-	"github.com/rifsxd/dvpl_go/dvpl_logic"
 )
 
 const (

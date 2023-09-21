@@ -15,7 +15,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/rifsxd/dvpl_go/dvpl_logic"
+	"github.com/RifsxD/dvpl_go/dvpl_logic"
 )
 
 const (
