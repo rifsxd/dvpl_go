@@ -1,8 +1,0 @@
-project_name: dvpl_go_cli
-
-builds:
-  - env:
-    goos:
-      - windows
-    goarch:
-      - amd64
