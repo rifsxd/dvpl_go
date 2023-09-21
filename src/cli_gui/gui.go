@@ -65,7 +65,7 @@ func Gui() {
 	successDialog.SetDismissText("OK")
 
 	content := container.NewVBox(
-		widget.NewLabelWithStyle("DVPL_GO GUI CONVERTER • 3.6.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("DVPL_GO GUI CONVERTER • 4.1.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),

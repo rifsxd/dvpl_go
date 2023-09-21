@@ -44,10 +44,10 @@ var resources embed.FS
 // Info variables
 const Dev = "RifsxD"
 const Name = "DVPL_GO CLI CONVERTER"
-const Version = "3.6.0"
+const Version = "4.1.0"
 const Repo = "https://github.com/RifsxD/dvpl-go"
 const Web = "https://rxd-mods.xyz"
-const Build = "20/09/2023"
+const Build = "21/09/2023"
 const Info = "A GUI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
 
 func main() {
@@ -101,7 +101,7 @@ func main() {
 	successDialog.SetDismissText("OK")
 
 	content := container.NewVBox(
-		widget.NewLabelWithStyle("DVPL_GO GUI CONVERTER • 3.6.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("DVPL_GO GUI CONVERTER • 4.1.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),
