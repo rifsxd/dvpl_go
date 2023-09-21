@@ -183,3 +183,31 @@ if is_windows && is_x86; then
     echo "Compiled sub package dvpl_go_gui for windows_386 -> build/windows_386/dvpl_go_gui.exe"
     echo ""
 fi
+
+# Pack win_64 builds
+if is_windows && is_amd64; then
+
+zip -r build/windows_amd64.zip build/windows_amd64/ 
+
+fi
+
+# Pack linux_64 builds
+if is_linux && is_amd64; then
+
+zip -r build/linux_amd64.zip build/linux_amd64/
+
+fi
+
+# Pack win_32 builds
+if is_windows && is_x86; then
+
+zip -r build/windows_386.zip build/windows_386/ 
+
+fi
+
+# Pack linux_32 builds
+if is_linux && is_x86; then
+
+zip -r build/linux_386.zip build/linux_386/
+
+fi
