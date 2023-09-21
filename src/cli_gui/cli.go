@@ -45,7 +45,7 @@ type DVPLFooter struct {
 
 // Info variables
 const Dev = "RifsxD"
-const Name = "DVPLGO CLI CONVERTER"
+const Name = "DVPL_GO CLI CONVERTER"
 const Version = "3.6.0"
 const Repo = "https://github.com/RifsxD/dvpl-go"
 const Web = "https://rxd-mods.xyz"
@@ -104,12 +104,13 @@ func parseCommandLineArgs() (*Config, error) {
 }
 
 func printHelpMessage() {
-	fmt.Println(`dvplgo [-mode] [-keep-originals] [-path]
+	fmt.Println(`dvpl_go [-mode] [-keep-originals] [-path]
 
     • mode can be one of the following:
 
         compress: compresses files into dvpl.
         decompress: decompresses dvpl files into standard files.
+		gui: opens the graphical user interface window.
         help: show this help message.
 
 	• flags can be one of the following:
@@ -119,23 +120,23 @@ func printHelpMessage() {
 
 	• usage can be one of the following examples:
 
-		$ dvplgo -mode help
+		$ dvpl_go -mode help
 
-		$ dvplgo -mode decompress -path /path/to/decompress/compress
+		$ dvpl_go -mode decompress -path /path/to/decompress/compress
 		
-		$ dvplgo -mode compress -path /path/to/decompress/compress
+		$ dvpl_go -mode compress -path /path/to/decompress/compress
 		
-		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress
+		$ dvpl_go -mode decompress -keep-originals -path /path/to/decompress/compress
 		
-		$ dvplgo -mode compress -keep-originals -path /path/to/decompress/compress
+		$ dvpl_go -mode compress -keep-originals -path /path/to/decompress/compress
 		
-		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl
+		$ dvpl_go -mode decompress -path /path/to/decompress/compress.yaml.dvpl
 		
-		$ dvplgo -mode compress -path /path/to/decompress/compress.yaml
+		$ dvpl_go -mode compress -path /path/to/decompress/compress.yaml
 		
-		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
+		$ dvpl_go -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
 		
-		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
+		$ dvpl_go -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
 	`)
 }
 

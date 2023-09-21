@@ -6,12 +6,13 @@
 
 Usage :
 
-  - dvplgo [-mode] [-keep-originals] [-path]
+  - dvpl_go [-mode] [-keep-originals] [-path]
 
     - mode can be one of the following:
 
         compress: compresses files into dvpl.
         decompress: decompresses dvpl files into standard files.
+		gui: opens the graphical user interface window.
         help: show this help message.
 
 	- flags can be one of the following:
@@ -20,33 +21,36 @@ Usage :
 		-path specifies the directory/files path to process. Default is the current directory.
 
 	- usage can be one of the following examples:
-		
+
 		```
-		$ dvplgo -mode help
-		```
-		```
-		$ dvplgo -mode decompress -path /path/to/decompress/compress
+		$ dvpl_go -mode gui
 		```
 		```
-		$ dvplgo -mode compress -path /path/to/decompress/compress
+		$ dvpl_go -mode help
 		```
 		```
-		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress
+		$ dvpl_go -mode decompress -path /path/to/decompress/compress
 		```
 		```
-		$ dvplgo -mode compress -keep-originals -path /path/to/decompress/compress
+		$ dvpl_go -mode compress -path /path/to/decompress/compress
 		```
 		```
-		$ dvplgo -mode decompress -path /path/to/decompress/compress.yaml.dvpl
+		$ dvpl_go -mode decompress -keep-originals -path /path/to/decompress/compress
 		```
 		```
-		$ dvplgo -mode compress -path /path/to/decompress/compress.yaml
+		$ dvpl_go -mode compress -keep-originals -path /path/to/decompress/compress
 		```
 		```
-		$ dvplgo -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
+		$ dvpl_go -mode decompress -path /path/to/decompress/compress.yaml.dvpl
 		```
 		```
-		$ dvplgo -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
+		$ dvpl_go -mode compress -path /path/to/decompress/compress.yaml
+		```
+		```
+		$ dvpl_go -mode decompress -keep-originals -path /path/to/decompress/compress.yaml.dvpl
+		```
+		```
+		$ dvpl_go -mode dcompress -keep-originals -path /path/to/decompress/compress.yaml
 		```
 
 

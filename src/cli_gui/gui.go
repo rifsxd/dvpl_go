@@ -11,16 +11,16 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-//go:embed resource/dvplgo.png
+//go:embed resource/dvpl_go.png
 var resources embed.FS
 
 func Gui() {
-	myApp := app.NewWithID("com.rxd.dvplgo")
-	myWindow := myApp.NewWindow("DVPLGO GUI CONVERTER")
+	myApp := app.NewWithID("com.rxd.dvpl_go")
+	myWindow := myApp.NewWindow("DVPL_GO GUI CONVERTER")
 
 	// Load the embedded image
-	iconData, _ := resources.ReadFile("resource/dvplgo.png")
-	iconResource := fyne.NewStaticResource("dvplgo.png", iconData)
+	iconData, _ := resources.ReadFile("resource/dvpl_go.png")
+	iconResource := fyne.NewStaticResource("dvpl_go.png", iconData)
 	myWindow.SetIcon(iconResource)
 
 	config := &Config{}
@@ -65,7 +65,7 @@ func Gui() {
 	successDialog.SetDismissText("OK")
 
 	content := container.NewVBox(
-		widget.NewLabelWithStyle("DVPLGO GUI CONVERTER • 3.6.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		widget.NewLabelWithStyle("DVPL_GO GUI CONVERTER • 3.6.0", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		container.NewHBox(layout.NewSpacer(), compressButton, decompressButton, layout.NewSpacer()),
 		widget.NewForm(
 			widget.NewFormItem("Options:", keepOriginalsCheck),
