@@ -3,7 +3,7 @@ module github.com/rifsxd/dvpl_go
 go 1.20
 
 require (
-	fyne.io/fyne/v2 v2.4.0
+	fyne.io/fyne/v2 v2.4.1
 	github.com/fatih/color v1.15.0
 	github.com/pierrec/lz4/v4 v4.1.18
 )
@@ -11,7 +11,7 @@ require (
 require (
 	fyne.io/systray v1.10.1-0.20230722100817-88df1e0ffa9a // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/fredbi/uri v1.0.0 // indirect
+	github.com/fredbi/uri v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/fyne-io/gl-js v0.0.0-20230506162202-1fdaa286a934 // indirect
 	github.com/fyne-io/glfw-js v0.0.0-20220517201726-bebc2019cd33 // indirect
@@ -32,10 +32,10 @@ require (
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tevino/abool v1.2.0 // indirect
 	github.com/yuin/goldmark v1.5.6 // indirect
-	golang.org/x/image v0.12.0 // indirect
-	golang.org/x/mobile v0.0.0-20230906132913-2077a3224571 // indirect
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/image v0.13.0 // indirect
+	golang.org/x/mobile v0.0.0-20231006135142-2b44d11868fe // indirect
+	golang.org/x/net v0.16.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/js/dom v0.0.0-20230808055721-96db8f4d5e3b // indirect
