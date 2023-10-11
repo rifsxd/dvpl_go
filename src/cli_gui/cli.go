@@ -47,7 +47,7 @@ type DVPLFooter struct {
 const Dev = "RifsxD"
 const Name = "DVPL_GO CLI CONVERTER"
 const Version = "4.1.0"
-const Repo = "https://github.com/RifsxD/dvpl-go"
+const Repo = "https://github.com/RifsxD/dvpl_go"
 const Web = "https://rxd-mods.xyz"
 const Build = "21/09/2023"
 const Info = "A CLI Tool Coded In JavaScript To Convert WoTB ( Dava ) SmartDLC DVPL File Based On LZ4_HC Compression."
