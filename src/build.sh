@@ -201,7 +201,7 @@ fi
 # Pack win_32 builds
 if is_windows && is_x86; then
 
-zip -r build/windows_386.zip build/windows_386/ 
+zip -r build/windows_386.zip build/windows_386/
 
 fi
 
@@ -211,3 +211,9 @@ if is_linux && is_x86; then
 zip -r build/linux_386.zip build/linux_386/
 
 fi
+
+
+# Cross compiling for windows from linux
+# GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc go build
+
+
