@@ -54,7 +54,7 @@ Usage :
 		```
 
 
-Building :
+How to build :
 
 - go 1.20+ required!
 
